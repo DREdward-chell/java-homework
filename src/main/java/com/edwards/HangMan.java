@@ -8,7 +8,7 @@ public class HangMan {
 
     public void run(String[] args) {
         try {
-            new GameManager();
+            new GameManager("words.json").run();
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }

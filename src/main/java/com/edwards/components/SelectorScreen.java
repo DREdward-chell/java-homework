@@ -28,6 +28,7 @@ public class SelectorScreen extends JPanel {
         Type jsonType = new TypeToken<List<Theme>>(){}.getType();
 
         themes = gson.fromJson(wordsJson, jsonType);
+        themes.add(new Theme("Случайно", List.of(), List.of(), List.of()));
 
         themeSelector = new JComboBox<>();
 
@@ -35,7 +36,7 @@ public class SelectorScreen extends JPanel {
 
         themeSelector.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        String[] difficulties = {"Легко", "Средне", "Тяжело"};
+        String[] difficulties = {"Легко", "Средне", "Тяжело", "Случайно"};
 
         difficultySelector = new JComboBox<>(difficulties);
 
@@ -58,8 +59,15 @@ public class SelectorScreen extends JPanel {
     }
 
     public Theme.Word getWord() {
+        Random random = new Random();
+
         Theme selectedTheme = null;
         String selectedThemeName = themeSelector.getSelectedItem().toString();
+
+        if (selectedThemeName.equals("Случайно")) {
+            selectedThemeName = themeSelector.getItemAt(random.nextInt(themeSelector.getItemCount() - 1)).toString();
+        }
+
         for (Theme theme : themes) {
             if (theme.getTheme().equals(selectedThemeName)) {
                 selectedTheme = theme;
@@ -74,11 +82,15 @@ public class SelectorScreen extends JPanel {
             case "Легко" -> selectedTheme.getEasy();
             case "Средне" -> selectedTheme.getMedium();
             case "Тяжело" -> selectedTheme.getHard();
+            case "Случайно" -> switch (random.nextInt(3)) {
+                case 1 -> selectedTheme.getMedium();
+                case 2 -> selectedTheme.getHard();
+                default -> selectedTheme.getEasy();
+            };
             default ->
                     throw new IllegalStateException("Unexpected value: " + difficultySelector.getSelectedItem().toString());
         };
 
-        Random random = new Random();
         return wordList.get(random.nextInt(wordList.size()));
     }
 }

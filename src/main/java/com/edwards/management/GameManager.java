@@ -12,14 +12,16 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 public class GameManager {
-    private final JFrame frame;
+    private JFrame frame;
     private GameScreen gameScreen;
     private SelectorScreen selectorScreen;
     private final String wordsJson;
 
-    public GameManager() throws IOException {
-        wordsJson = Utilities.readWholeFile(Objects.requireNonNull(getClass().getClassLoader().getResource("words.json")).getPath());
+    public GameManager(String resources) throws IOException {
+        wordsJson = Utilities.readWholeFile(Objects.requireNonNull(getClass().getClassLoader().getResource(resources)).getPath());
+    }
 
+    public void run() {
         frame = new JFrame("Hang Man");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
