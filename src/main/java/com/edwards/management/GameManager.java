@@ -56,12 +56,13 @@ public class GameManager {
 //        gameScreen.getHangManDrawer().repaint();
         repaint();
 
-        if (noRemainingAttempts()) {
-            displayRestartDialog("Вы проиграли! Может попробуете ещё один раз?");
-        }
-
         if (gameScreen.getHiddenWord().wholeWordWasUnleashed()) {
             displayRestartDialog("Победа! Вы бы хотели сыграть ещё одну игру?");
+        }
+
+        if (noRemainingAttempts()) {
+            gameScreen.getHiddenWord().unleashWord();
+            displayRestartDialog("Вы проиграли! Может попробуете ещё один раз?");
         }
     }
 
