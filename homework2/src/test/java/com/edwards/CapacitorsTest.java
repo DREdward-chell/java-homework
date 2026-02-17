@@ -17,6 +17,13 @@ public class CapacitorsTest {
     }
 
     @Test
+    public void testIncrementalStrategy2() {
+        var strategy = new IncrementalStrategy(4);
+        var imaginaryCapacity = 10;
+        assertEquals(imaginaryCapacity + 8, strategy.calculateNewCapacity(imaginaryCapacity, imaginaryCapacity + 5));
+    }
+
+    @Test
     public void testExponentialStrategy() {
         var strategy2 = new RealExponentialStrategy(2);
 

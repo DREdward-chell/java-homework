@@ -15,6 +15,9 @@ public class IncrementalStrategy implements CapacityStrategy {
         if (requiredCapacity <= currentCapacity) {
             return currentCapacity;
         }
-        return currentCapacity + fixedIncrement;
+
+        int x = Math.ceilDiv(requiredCapacity - currentCapacity, fixedIncrement);
+
+        return currentCapacity + fixedIncrement * x;
     }
 }
