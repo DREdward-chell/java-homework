@@ -1,11 +1,8 @@
 package com.edwards;
 
-import com.edwards.collections.capacitors.ExponentialStrategy;
 import com.edwards.collections.capacitors.IncrementalStrategy;
+import com.edwards.collections.capacitors.RealExponentialStrategy;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,7 +18,7 @@ public class CapacitorsTest {
 
     @Test
     public void testExponentialStrategy() {
-        var strategy2 = new ExponentialStrategy(2);
+        var strategy2 = new RealExponentialStrategy(2);
 
         assertEquals(16, strategy2.calculateNewCapacity(1, 11));
     }
