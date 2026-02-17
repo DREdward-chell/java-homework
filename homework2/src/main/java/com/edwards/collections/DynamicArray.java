@@ -87,4 +87,8 @@ public interface DynamicArray<T> extends Collection<T> {
             }
         };
     }
+
+    default Spliterator<T> spliterator() {
+        return Arrays.stream(getData(), 0, size()).spliterator();
+    }
 }

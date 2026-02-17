@@ -105,4 +105,12 @@ public class DynamicArrayTest {
         vector.sort();
         assertTrue(DynamicArray.of(1, 2, 3, 4, 5).collectionEquals(vector));
     }
+
+    @Test
+    public void testStreamApi() {
+        var vector = DynamicArray.of(1, 2, 3, 4, 5);
+        var res = new CVector<Integer>();
+        vector.stream().map(x -> x * x).filter(x -> x % 2 == 0).forEach(res::add);
+        assertTrue(DynamicArray.of(4, 16).collectionEquals(res));
+    }
 }
