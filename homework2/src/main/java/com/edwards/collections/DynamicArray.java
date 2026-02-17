@@ -1,12 +1,7 @@
 package com.edwards.collections;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.StreamSupport;
 
 /**
  * Большинство методов DynamicArray это прямая копирка
@@ -21,6 +16,8 @@ import java.util.stream.StreamSupport;
  * код менять не потребуется, а сама коллекция станет логичнее
  */
 public interface DynamicArray<T> extends Collection<T> {
+    T[] getData();
+
     T get(int index) throws IndexOutOfBoundsException;
 
     T set(int index, T element) throws IndexOutOfBoundsException;
@@ -51,8 +48,8 @@ public interface DynamicArray<T> extends Collection<T> {
         return it1.hasNext() == it2.hasNext();
     }
 
-    // TODO
     default void sort() {
+        Arrays.sort(getData(), 0, size());
     }
 
     default Iterator<T> iterator() {

@@ -91,11 +91,18 @@ public class DynamicArrayTest {
 
     @Test
     public void testArrayCreation() {
-        var vector = new CVector<Object>();
+        var vector = new CVector<>();
         vector.add(1);
         vector.add(2);
         vector.add(3);
         assertEquals(3, vector.size());
         assertArrayEquals(new Object[]{1, 2, 3}, vector.toArray());
+    }
+
+    @Test
+    public void testSort() {
+        var vector = DynamicArray.of(1, 5, 3, 4, 2);
+        vector.sort();
+        assertTrue(DynamicArray.of(1, 2, 3, 4, 5).collectionEquals(vector));
     }
 }

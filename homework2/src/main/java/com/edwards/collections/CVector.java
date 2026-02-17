@@ -6,8 +6,6 @@ import com.edwards.collections.capacitors.CapacityStrategy;
 import com.edwards.collections.capacitors.DoublingStrategy;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.function.Consumer;
 
 public class CVector<T> implements DynamicArray<T> {
@@ -30,7 +28,6 @@ public class CVector<T> implements DynamicArray<T> {
         data = allocator.allocateNew(Math.clamp(initialSize, 1, Integer.MAX_VALUE));
     }
 
-
     public CVector(T[] data) {
         this();
         workingSize = data.length;
@@ -42,6 +39,11 @@ public class CVector<T> implements DynamicArray<T> {
         if (newCap > workingSize) {
             data = allocator.reallocate(data, newCap);
         }
+    }
+
+    @Override
+    public T[] getData() {
+        return data;
     }
 
     @Override
