@@ -4,19 +4,22 @@ import com.edwards.collections.serializers.*;
 
 public class SerializerFactory {
     public DynamicArraySerializer createSerializer(String format) {
-        var split = format.split("[.]");
-        if (split.length < 2) {
-            throw new IllegalArgumentException("Invalid file formating: " + format);
+        if (format.endsWith("json")) {
+            return new JsonDynamicArraySerializer();
         }
 
-        var f = split[split.length - 1];
+        if (format.endsWith("xml")) {
+            return new XmlDynamicArraySerializer();
+        }
 
-        return switch (f) {
-            case "xml" -> new XmlDynamicArraySerializer();
-            case "json" -> new JsonDynamicArraySerializer();
-            case "csv" -> new CsvDynamicArraySerializer();
-            case "bin" -> new BinaryDynamicArraySerializer();
-            default -> throw new IllegalArgumentException("Unknown format: " + f);
-        };
+        if (format.endsWith("csv")) {
+            return new CsvDynamicArraySerializer();
+        }
+
+        if (format.endsWith("bin")) {
+            return new BinaryDynamicArraySerializer();
+        }
+
+        throw new IllegalArgumentException("Unknown format: " + format);
     }
 }
