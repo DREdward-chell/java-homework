@@ -4,16 +4,15 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import com.google.gson.Gson;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.time.Instant;
 
+/**
+ * The response class is a very simple utility to map responses from URL connection
+ * @param <DTO> dataclass used for JSON mapping using {@link Gson}
+ */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -24,7 +23,15 @@ public class ApiResponse<DTO> {
     private String error;
     private DTO data;
 
-    public static <T> ApiResponse<T> fromConnection(HttpURLConnection connection) throws IOException {
+    /**
+     * A very simple factory that allows to map the response directly from connection
+     * @param connection built request
+     * @param clazz dto class
+     * @return mapped response
+     * @param <T> dto
+     * @throws IOException I decided to leave the error handling to service
+     */
+    public static <T> ApiResponse<T> fromConnection(HttpURLConnection connection, Class<T> clazz) throws IOException {
         ApiResponse<T> response = new ApiResponse<>();
 
         response.status = connection.getResponseCode();
@@ -35,12 +42,11 @@ public class ApiResponse<DTO> {
         } else {
             response.message = connection.getResponseMessage();
             InputStream is = connection.getInputStream();
-            Reader reader = new InputStreamReader(is);
+            Reader reader = new BufferedReader(new InputStreamReader(is));
 
-            TypeReference<T> typeRef = new TypeReference<>() {};
+            Gson mapper = new Gson();
 
-            ObjectMapper mapper = new ObjectMapper();
-            response.data = mapper.readValue(reader, typeRef);
+            response.data = mapper.fromJson(reader, clazz);
         }
 
         return response;

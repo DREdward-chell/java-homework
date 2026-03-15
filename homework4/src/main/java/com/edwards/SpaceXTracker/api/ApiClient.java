@@ -1,24 +1,28 @@
 package com.edwards.SpaceXTracker.api;
 
 import com.edwards.SpaceXTracker.config.ApiConfiguration;
-import com.edwards.SpaceXTracker.exceptions.SpaceXIOException;
-import com.edwards.SpaceXTracker.exceptions.SpaceXMalformedUrl;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.Optional;
 
 @Component
 @AllArgsConstructor
 public class ApiClient {
     private final ApiConfiguration apiConfiguration;
 
-    public <T> ApiResponse<T> get(String targetUrl) throws IOException, IllegalArgumentException {
+    /**
+     * The very direct fetch along with auto JSON parse
+     * @param targetUrl request
+     * @param clazz json DTO
+     * @return mapped response
+     * @param <T> DTO
+     * @throws IOException all response reading errors
+     * @throws IllegalArgumentException when request is ill formed
+     */
+    public <T> ApiResponse<T> get(String targetUrl, Class<T> clazz) throws IOException, IllegalArgumentException {
         String target = apiConfiguration.getBaseUrl() + targetUrl;
         int timeout = apiConfiguration.getTimeout();
         HttpURLConnection connection = null;
@@ -34,7 +38,7 @@ public class ApiClient {
             connection.setReadTimeout(timeout);
             connection.setRequestProperty("Accept", "application/json");
 
-            response = ApiResponse.fromConnection(connection);
+            response = ApiResponse.fromConnection(connection, clazz);
 
         } finally {
             if (connection != null) {
