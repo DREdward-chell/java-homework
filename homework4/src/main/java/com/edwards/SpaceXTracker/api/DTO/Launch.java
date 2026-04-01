@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Launch DTO
  * @see <a href="https://github.com/r-spacex/SpaceX-API/blob/master/docs/launches/v5">SpaceX API Launches v5</a>
@@ -21,7 +23,9 @@ public class Launch {
     private int flightNumber;
     @SerializedName("date_utc")
     private String dateUtc;
-    private boolean success;
+    private Boolean success;
     private boolean upcoming;
     private String details;
+    private List<Failure> failures;
+    private List<Core> cores;
 }

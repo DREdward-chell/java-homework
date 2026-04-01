@@ -22,6 +22,7 @@ public class ApiResponse<DTO> {
     private String message;
     private String error;
     private DTO data;
+    private String rawBody;
 
     /**
      * A very simple factory that allows to map the response directly from connection
@@ -42,11 +43,17 @@ public class ApiResponse<DTO> {
         } else {
             response.message = connection.getResponseMessage();
             InputStream is = connection.getInputStream();
-            Reader reader = new BufferedReader(new InputStreamReader(is));
+            StringBuilder sb = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+            }
+            response.rawBody = sb.toString();
 
             Gson mapper = new Gson();
-
-            response.data = mapper.fromJson(reader, clazz);
+            response.data = mapper.fromJson(response.rawBody, clazz);
         }
 
         return response;
