@@ -1,0 +1,23 @@
+{
+  "id": "6243ae24af52800c6e919254",
+  "name": "Crew-4",
+  "flight_number": 159,
+  "date_utc": "2022-04-27T07:52:00.000Z",
+  "success": true,
+  "upcoming": false,
+  "details": "SpaceX's fourth operational crewed mission to the ISS on behalf of NASA.",
+  "failures": [],
+  "cores": [
+    {
+      "core": "5e9e28a6f35918c0803b265c",
+      "flight": 3,
+      "gridfins": true,
+      "legs": true,
+      "reused": true,
+      "landing_attempt": true,
+      "landing_success": true,
+      "landing_type": "ASDS",
+      "landpad": "5e9e3033383ecbb9e534e7cc"
+    }
+  ]
+}

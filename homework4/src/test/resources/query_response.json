@@ -1,0 +1,32 @@
+{
+  "docs": [
+    {
+      "id": "5eb87d42ffd86e000604b384",
+      "name": "FalconSat",
+      "flight_number": 1,
+      "date_utc": "2006-03-24T22:30:00.000Z",
+      "success": false,
+      "upcoming": false,
+      "details": "Engine failure at 33 seconds",
+      "failures": [],
+      "cores": []
+    },
+    {
+      "id": "5eb87d43ffd86e000604b385",
+      "name": "DemoSat",
+      "flight_number": 2,
+      "date_utc": "2007-03-21T01:10:00.000Z",
+      "success": false,
+      "upcoming": false,
+      "details": null,
+      "failures": [],
+      "cores": []
+    }
+  ],
+  "totalDocs": 2,
+  "limit": 1000,
+  "totalPages": 1,
+  "page": 1,
+  "hasNextPage": false,
+  "hasPrevPage": false
+}
