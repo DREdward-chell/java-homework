@@ -1,0 +1,124 @@
+#version 430 core
+
+layout(local_size_x = 64) in;
+
+layout(std430, binding = 0) readonly buffer Transforms {
+    float transformData[];
+};
+layout(std430, binding = 1) readonly buffer Variations {
+    uint variationData[];
+};
+layout(std430, binding = 2) coherent buffer Histogram {
+    uint hist[];
+};
+layout(std430, binding = 3) readonly buffer Palette {
+    vec4 palette[];
+};
+
+uniform uint u_width;
+uniform uint u_height;
+uniform uint u_numTransforms;
+uniform uint u_numVariations;
+uniform uint u_iterationsPerInvocation;
+uniform uint u_warmupIterations;
+uniform uint u_seedLo;
+uniform uint u_seedHi;
+uniform float u_viewMinX;
+uniform float u_viewInvRangeX;
+uniform float u_viewMinY;
+uniform float u_viewInvRangeY;
+uniform float u_colorScale;
+
+//#include "variations"
+
+uint rng_next(inout uint state) {
+    state ^= state << 13u;
+    state ^= state >> 17u;
+    state ^= state << 5u;
+    if (state == 0u) state = 0x9E3779B9u;
+    return state;
+}
+
+float rng_float(inout uint state) {
+    return float(rng_next(state)) / 4294967296.0;
+}
+
+uint rng_range(inout uint state, uint n) {
+    return rng_next(state) % n;
+}
+
+vec2 apply_variation_blend(vec2 p) {
+    vec2 acc = vec2(0.0);
+    for (uint i = 0u; i < u_numVariations; i++) {
+        uint id = variationData[i];
+        float w = uintBitsToFloat(variationData[u_numVariations + i]);
+        vec2 v;
+        switch (id) {
+            case 0u: v = variation_linear(p);     break;
+            case 1u: v = variation_sinusoidal(p); break;
+            case 2u: v = variation_spherical(p);  break;
+            case 3u: v = variation_swirl(p);      break;
+            case 4u: v = variation_horseshoe(p);  break;
+            default: v = vec2(0.0);               break;
+        }
+        acc += w * v;
+    }
+    return acc;
+}
+
+vec2 apply_transform(vec2 p, uint ti, out float colorCoord) {
+    uint base = ti * 8u;
+    float a = transformData[base + 0u];
+    float b = transformData[base + 1u];
+    float c = transformData[base + 2u];
+    float d = transformData[base + 3u];
+    float e = transformData[base + 4u];
+    float f = transformData[base + 5u];
+    colorCoord = transformData[base + 6u];
+    vec2 affine = vec2(a * p.x + b * p.y + c, d * p.x + e * p.y + f);
+    return apply_variation_blend(affine);
+}
+
+void plot(vec2 p, vec3 rgb) {
+    if (any(isinf(p)) || any(isnan(p))) return;
+    float nx = (p.x - u_viewMinX) * u_viewInvRangeX;
+    float ny = 1.0 - (p.y - u_viewMinY) * u_viewInvRangeY;
+    int px = int(nx * float(u_width - 1u));
+    int py = int(ny * float(u_height - 1u));
+    if (px < 0 || py < 0 || px >= int(u_width) || py >= int(u_height)) return;
+    uint idx = (uint(py) * u_width + uint(px)) * 4u;
+    atomicAdd(hist[idx + 0u], 1u);
+    atomicAdd(hist[idx + 1u], uint(rgb.r * u_colorScale));
+    atomicAdd(hist[idx + 2u], uint(rgb.g * u_colorScale));
+    atomicAdd(hist[idx + 3u], uint(rgb.b * u_colorScale));
+}
+
+vec3 sample_palette(float c) {
+    int i = int(clamp(c, 0.0, 1.0) * 255.0);
+    return palette[i].rgb;
+}
+
+void main() {
+    uint gid = gl_GlobalInvocationID.x;
+    uint state = u_seedLo ^ (gid * 0x9E3779B9u) ^ (u_seedHi + gid * 0x85EBCA6Bu);
+    if (state == 0u) state = 1u + gid;
+
+    vec2 p = vec2(0.0, 0.0);
+    float c = 0.5;
+
+    for (uint i = 0u; i < u_warmupIterations; i++) {
+        uint ti = rng_range(state, u_numTransforms);
+        float cc;
+        p = apply_transform(p, ti, cc);
+        c = (c + cc) * 0.5;
+    }
+
+    for (uint i = 0u; i < u_iterationsPerInvocation; i++) {
+        uint ti = rng_range(state, u_numTransforms);
+        float cc;
+        p = apply_transform(p, ti, cc);
+        c = (c + cc) * 0.5;
+        vec3 rgb = sample_palette(c);
+        plot(p, rgb);
+    }
+}
