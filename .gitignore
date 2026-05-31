@@ -1,3 +1,4 @@
 /.idea/
 ./target/
 ./*/target/
+/homework7/gradle/wrapper/gradle-wrapper.jar

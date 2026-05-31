@@ -1,0 +1,11 @@
+[versions]
+junit-bom = "6.0.0"
+junit-jupiter = "6.0.3"
+junit-platform-launcher = "6.0.3"
+h2 = "2.3.232"
+
+[libraries]
+test-junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-bom" }
+test-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+test-runtime-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
+test-h2 = { module = "com.h2database:h2", version.ref = "h2" }
